@@ -92,7 +92,10 @@ function filterTable() {
   }
 
   filteredTable.setFilter([
-    { field: "name", type: "like", value: searchKey },
+    [
+      { field: "name", type: "like", value: searchKey },
+      { field: "dept", type: "like", value: searchKey },
+    ],
     { field: "maturity", type: maturityFilterType, value: selectedMaturity },
     { field: "dept", type: "in", value: selectedFilters },
   ]);
@@ -151,7 +154,6 @@ function initApiRequest() {
   xhttp.send();
   const xmlDoc = xhttp.responseXML;
   const xmlData = xmlToJson(xmlDoc);
-  console.log(xmlDoc);
   const entries = xmlData.feed.entry;
   tableData.length = 0;
   entries.forEach((entry) => {
@@ -161,9 +163,13 @@ function initApiRequest() {
     data.maturity = props["d:Maturity_Indicator"]["#text"] || "";
     data.name = props["d:Title"]["#text"] || "";
     data.dept = props["d:Project_Category"]["#text"] || "All";
-    data.link = entry.link["@attributes"].href || "";
+    data.link = `https://eu023-sp.shell.com/sites/SPOAA1264/scar/CSDI_Energy_Transition_Digital_Initiatives/DispForm.aspx?ID=${
+      props["d:ID"]["#text"] || "#"
+    }`;
     tableData.push(data);
   });
+
+  console.log(tableData);
 
   // Get categories from Table Data
   let uniqueCategories = Array.from(new Set(tableData.map((d) => d.dept)));
