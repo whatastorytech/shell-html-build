@@ -94,9 +94,10 @@ function onMaturitySelect() {
 }
 
 function filterTable() {
-  selectedMaturity = document.querySelector(
+  const selectedMaturityElement = document.querySelector(
     'input[name="maturity-filters"]:checked'
-  ).value;
+  );
+  selectedMaturity = selectedMaturityElement.value;
 
   let maturityFilterType = "=";
   if (selectedMaturity == "all") {
@@ -199,7 +200,7 @@ function initApiRequest() {
     .filter((v) => v.name !== "All");
   filtersList.push({
     name: "All",
-    value: "dept-all",
+    value: "all",
     count: tableData.length,
   });
   filtersList.push(...uniqueCategories);
@@ -245,7 +246,7 @@ function initTable() {
       {
         title: "Line of Business",
         field: "dept",
-        width: 150,
+        width: 200,
       },
       {
         title: "Project Name",
