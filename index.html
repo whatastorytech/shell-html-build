@@ -113,20 +113,22 @@
           <!-- Departments Filters Start -->
           <div class="block">
             <div class="block-title">
-              <h3>Departments</h3>
-              <button class="clear-selection">Clear</button>
+              <h3>Line of Business</h3>
+              <button id="lb-clear" class="clear-selection">Clear</button>
             </div>
-            <div class="dept-filters">
-              <!-- <div class="dept-filter-item">
-                <label for="dept-1">
-                  <input type="checkbox" id="dept-1" />
-                  <span>All Projects</span>
-                </label>
-                <span class="count">729</span>
-              </div> -->
-            </div>
+            <div id="dept-filters" class="dept-filters"></div>
           </div>
           <!-- Departments Filters End -->
+
+          <!-- Themes Filters Start -->
+          <div class="block">
+            <div class="block-title">
+              <h3>CSDI Themes</h3>
+              <button id="csdi-clear" class="clear-selection">Clear</button>
+            </div>
+            <div id="themes-filters" class="dept-filters"></div>
+          </div>
+          <!-- Themes Filters End -->
         </div>
         <div class="contents">
           <table id="table-data" class="data-table"></table>

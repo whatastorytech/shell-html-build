@@ -6,7 +6,7 @@ let searchKey = "";
 let filteredTable = null;
 
 // Create category filters in dom
-function createFilterItem(title, id, count) {
+function createFilterItem(title, id, count, blockSelector = "#dept-filters") {
   const filterItem = document.createElement("div");
   filterItem.setAttribute("class", "dept-filter-item");
 
@@ -31,11 +31,11 @@ function createFilterItem(title, id, count) {
   filterItem.appendChild(label);
   filterItem.appendChild(countText);
 
-  document.querySelector(".dept-filters").appendChild(filterItem);
+  document.querySelector(blockSelector).appendChild(filterItem);
 }
 
 // Clear Filters
-function clearAllCheckbox(container = ".dept-filters") {
+function clearAllCheckbox(container = "#dept-filters") {
   document
     .querySelectorAll(`${container} input`)
     .forEach((checkbox) => (checkbox.checked = false));
@@ -205,13 +205,25 @@ function initTable() {
     columns: [
       //Table Columns
       {
-        title: "Department",
+        title: "CSDI Themes",
+        field: "csditheme",
+        width: 150,
+      },
+      {
+        title: "Line of Business",
         field: "dept",
         width: 150,
       },
-      { title: "Project Name", field: "name" },
       {
-        title: "Maturity",
+        title: "Project Name",
+        field: "name",
+        formatter: function (cell) {
+          const rowData = cell.getData();
+          return `<a href="${rowData.link}">${rowData.name}</a>`;
+        },
+      },
+      {
+        title: "Project Maturity",
         field: "maturity",
         headerHozAlign: "center",
         hozAlign: "center",
@@ -232,16 +244,6 @@ function initTable() {
           return `<span class="${colorClass}"></span>`;
         },
       },
-      {
-        title: "Project Link",
-        field: "link",
-        headerHozAlign: "center",
-        hozAlign: "center",
-        width: 150,
-        formatter: function (cell) {
-          return `<a href="${cell.getValue()}">View Project</a>`;
-        },
-      },
     ],
     pagination: true,
     paginationSize: 10,
@@ -252,9 +254,14 @@ function initTable() {
 }
 
 function attachEvents() {
-  // Clear all selected checkbox filters
-  document.querySelector(".clear-selection").addEventListener("click", () => {
+  // Clear all line of business selected checkbox filters
+  document.querySelector("#lb-clear").addEventListener("click", () => {
     clearAllCheckbox();
+  });
+
+  // Clear all themes selected checkbox filters
+  document.querySelector("#csdi-clear").addEventListener("click", () => {
+    clearAllCheckbox("#themes-filters");
   });
 
   // Get selected value of maturity on change
