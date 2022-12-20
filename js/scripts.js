@@ -1,6 +1,8 @@
 const filtersList = [];
+const themesList = [];
 const tableData = [];
-const selectedFilters = [];
+const deptSelectedFilters = [];
+const themeSelectedFilters = [];
 let selectedMaturity = "";
 let searchKey = "";
 let filteredTable = null;
@@ -14,7 +16,11 @@ function createFilterItem(title, id, count, blockSelector = "#dept-filters") {
   label.setAttribute("for", id);
 
   const checkbox = document.createElement("input");
-  checkbox.addEventListener("change", onCheckboxSelect);
+  if (blockSelector == "#dept-filters") {
+    checkbox.addEventListener("change", onCheckboxSelect);
+  } else {
+    checkbox.addEventListener("change", onThemeSelect);
+  }
   checkbox.type = "checkbox";
   checkbox.name = checkbox.value = checkbox.id = id;
   checkbox.value = title;
@@ -39,7 +45,7 @@ function clearAllCheckbox(container = "#dept-filters") {
   document
     .querySelectorAll(`${container} input`)
     .forEach((checkbox) => (checkbox.checked = false));
-  selectedFilters.length = 0;
+  deptSelectedFilters.length = 0;
   filteredTable.clearFilter();
 }
 
@@ -65,10 +71,20 @@ function searchMatchFilter(data, filterParams) {
 
 function onCheckboxSelect() {
   if (this.checked) {
-    selectedFilters.push(this.value);
+    deptSelectedFilters.push(this.value);
   } else {
-    selectedFilters.indexOf(this.value) !== -1 &&
-      selectedFilters.splice(selectedFilters.indexOf(this.value), 1);
+    deptSelectedFilters.indexOf(this.value) !== -1 &&
+      deptSelectedFilters.splice(deptSelectedFilters.indexOf(this.value), 1);
+  }
+  filterTable();
+}
+
+function onThemeSelect() {
+  if (this.checked) {
+    themeSelectedFilters.push(this.value);
+  } else {
+    themeSelectedFilters.indexOf(this.value) !== -1 &&
+      themeSelectedFilters.splice(themeSelectedFilters.indexOf(this.value), 1);
   }
   filterTable();
 }
@@ -95,9 +111,11 @@ function filterTable() {
     [
       { field: "name", type: "like", value: searchKey },
       { field: "dept", type: "like", value: searchKey },
+      { field: "csditheme", type: "like", value: searchKey },
     ],
     { field: "maturity", type: maturityFilterType, value: selectedMaturity },
-    { field: "dept", type: "in", value: selectedFilters },
+    { field: "dept", type: "in", value: deptSelectedFilters },
+    { field: "csditheme", type: "in", value: themeSelectedFilters },
   ]);
 }
 
@@ -166,10 +184,9 @@ function initApiRequest() {
     data.link = `https://eu023-sp.shell.com/sites/SPOAA1264/scar/CSDI_Energy_Transition_Digital_Initiatives/DispForm.aspx?ID=${
       props["d:ID"]["#text"] || "#"
     }`;
+    data.csditheme = props["d:Maturity_Indicator"]["#text"] || "";
     tableData.push(data);
   });
-
-  console.log(tableData);
 
   // Get categories from Table Data
   let uniqueCategories = Array.from(new Set(tableData.map((d) => d.dept)));
@@ -182,19 +199,35 @@ function initApiRequest() {
     .filter((v) => v.name !== "All");
   filtersList.push({
     name: "All",
-    value: "all",
+    value: "dept-all",
     count: tableData.length,
   });
   filtersList.push(...uniqueCategories);
+
+  // Get themes from Table Data
+  let uniqueThemes = Array.from(new Set(tableData.map((d) => d.csditheme)));
+  uniqueThemes = uniqueThemes
+    .map((name) => ({
+      name: name,
+      value: name,
+      count: tableData.filter((d) => d.csditheme === name).length,
+    }))
+    .filter((v) => v.name !== "All");
+  themesList.push(...uniqueThemes);
 
   // Init Table on data population
   initTable();
 }
 
 function initTable() {
-  // Create dynamic filter lists
+  // Create dynamic dept filter lists
   filtersList.forEach((item) => {
     createFilterItem(item.name, item.value, item.count);
+  });
+
+  // Create dynamic themes filter lists
+  themesList.forEach((item) => {
+    createFilterItem(item.name, item.value, item.count, "#themes-filters");
   });
 
   // Init Tabulator
